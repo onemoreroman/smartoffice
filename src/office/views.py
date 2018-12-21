@@ -17,7 +17,6 @@ def upload_data(request):
     sensor_data = SensorsData(sensor=sensor[0])
     sensor_data.value = sensor_value
     sensor_data.save()
-    print(sensor_name, sensor_value)
     return good_response('Data uploaded', {'sensor': sensor_name})
 
 
