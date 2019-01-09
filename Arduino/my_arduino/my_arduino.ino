@@ -9,8 +9,8 @@
 DHT dht(DHTPIN, DHTTYPE);
 
 // Server
-char serverAddress[] = "192.168.1.9";  // server address
-int port = 8000;
+char serverAddress[] = "ec2-3-121-222-156.eu-central-1.compute.amazonaws.com";  // server address
+int port = 80;
 String auth_user = "test_user_01";
 String auth_password = "test_user_01";
 int statusCode = 0;
@@ -72,7 +72,7 @@ void loop() {
   
   // Send request
   http_client.beginRequest();
-  http_client.post("office/upload_data");
+  http_client.post("/office/upload_data");
   http_client.sendHeader("Content-Type", "application/json");
   http_client.sendHeader("Content-Length", postData.length());
   http_client.sendBasicAuth(auth_user, auth_password);
