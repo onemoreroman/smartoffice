@@ -16,7 +16,7 @@
 
 
         <title>Мониторинг офиса №7</title>
-        {{ temperature_air|json_script:"temp_air" }}
+        {{ temperature_heat|json_script:"temp_heat" }}
 
     </head>
     <body>
@@ -37,7 +37,7 @@
                   borderColor: 'rgba(99,0,125, .2)',
                   backgroundColor: 'rgba(99,0,125, .5)',
                   label: 'Температура воздуха',
-                  data: JSON.parse(document.getElementById('temp_air').textContent)
+                  data: JSON.parse(document.getElementById('temp_heat').textContent)
                 }]
               };
 
