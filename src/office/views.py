@@ -1,5 +1,6 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from django.shortcuts import render
 from rest_framework import status
 
 from office.models import Sensors, SensorsData
@@ -45,3 +46,21 @@ def good_response(message, data=None):
         for item, value in data.items():
             response.data['data'][item] = value
     return response
+
+def index(request):
+
+    sd = SensorsData.objects.all()
+
+    temp_heat = []
+    for line in sd:
+        temp_heat.append({
+            'x': line.time,
+            'y': line.value
+        })
+
+    template = 'info.html'
+    context = {
+        # 'temperature_air': temp_air,
+        'temperature_heater': temp_heat
+    }
+    return render(request, template, context)
