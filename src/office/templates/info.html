@@ -16,7 +16,7 @@
 
 
         <title>Мониторинг офиса №7</title>
-        {{ temperature_heat|json_script:"temp_heat" }}
+        {{ temperature_heater|json_script:"temp_heat" }}
 
     </head>
     <body>
@@ -58,7 +58,7 @@
                         },
                       },
                       scaleLabel: {
-                        labelString: 'Date',
+                        labelString: 'Часы с 00:00 1 января 2019',
                         display: true,
                       }
                     }],
@@ -70,7 +70,7 @@
                       //   }
                       // },
                       scaleLabel: {
-                        labelString: 'Degrees C',
+                        labelString: 'Градусы [C]',
                         display: true
                       }
                     }]

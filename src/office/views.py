@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.shortcuts import render
@@ -54,10 +56,10 @@ def index(request):
     temp_heat = []
     for line in sd:
         temp_heat.append({
-            'x': line.time,
-            'y': line.value
+            'x': int((line.time-datetime(2019,1,1,tzinfo=timezone.utc)).total_seconds()//3600),
+            'y': float(line.value)
         })
-
+     
     template = 'info.html'
     context = {
         # 'temperature_air': temp_air,
