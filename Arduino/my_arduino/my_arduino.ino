@@ -14,6 +14,7 @@ int port = 80;
 String auth_user = "test_user_01";
 String auth_password = "test_user_01";
 int statusCode = 0;
+int samples[3];
 String response;
 
 // Ethernet
@@ -32,7 +33,8 @@ void setup() {
 
   // Initialize sensors
   dht.begin();
-
+  analogReference(EXTERNAL);
+ 
   // start the Ethernet connection:
   Serial.println("Initialize Ethernet with DHCP:");
   if (Ethernet.begin(mac) == 0) {
@@ -59,25 +61,55 @@ void setup() {
 
 void loop() {
   // Ask sensors
-  delay(2000);
-  float t = dht.readTemperature();
-//float h = dht.readHumidity();
-
+  delay(10000);
+  float t1 = dht.readTemperature();
+  uint8_t i;
+  float r2, t2;
+ 
+  // take N samples in a row, with a slight delay
+  for (i=0; i< 3; i++) {
+   samples[i] = analogRead(A5);
+   delay(10);
+  }
+ 
+  // average all the samples out
+  r2 = 0;
+  for (i=0; i< 3; i++) {
+     r2 += samples[i];
+  }
+  r2 /= 3;
+ 
+  // convert the value to resistance
+  r2 = 1023 / r2 - 1;
+  r2 = 10000 / r2;
+  t2 = r2 / 10000;     // (R/Ro)
+  t2 = log(t2);                  // ln(R/Ro)
+  t2 /= 3500;                   // 1/B * ln(R/Ro)
+  t2 += 1.0 / (25 + 273.15); // + (1/To)
+  t2 = 1.0 / t2;                 // Invert
+  t2 -= 273.15;                         // convert to C
+ 
   // Generate data
-  String postData = "{\"sensor_name\":\"dht11_temp\","; 
-  postData += "\"sensor_value\":";
-  postData += t;
-  postData += "}";
-  Serial.println(postData);
-  
-  // Send request
+  String postData1 = "{\"sensor_name\":\"dht11_temp\","; 
+  postData1 += "\"sensor_value\":";
+  postData1 += t1;
+  postData1 += "}";
+  Serial.println(postData1);
+
+  String postData2 = "{\"sensor_name\":\"ntc10k_temp\","; 
+  postData2 += "\"sensor_value\":";
+  postData2 += t2;
+  postData2 += "}";
+  Serial.println(postData2);
+
+  // Send requests
   http_client.beginRequest();
   http_client.post("/office/upload_data");
   http_client.sendHeader("Content-Type", "application/json");
-  http_client.sendHeader("Content-Length", postData.length());
+  http_client.sendHeader("Content-Length", postData1.length());
   http_client.sendBasicAuth(auth_user, auth_password);
   http_client.beginBody();
-  http_client.print(postData);  
+  http_client.print(postData1);  
   http_client.endRequest();
   
   // Read response
@@ -85,4 +117,22 @@ void loop() {
   statusCode = http_client.responseStatusCode();
   Serial.println(statusCode);
   Serial.println(response);
+
+  
+  
+  http_client.beginRequest();
+  http_client.post("/office/upload_data");
+  http_client.sendHeader("Content-Type", "application/json");
+  http_client.sendHeader("Content-Length", postData2.length());
+  http_client.sendBasicAuth(auth_user, auth_password);
+  http_client.beginBody();
+  http_client.print(postData2);  
+  http_client.endRequest();
+  
+  // Read response
+  response = http_client.responseBody();
+  statusCode = http_client.responseStatusCode();
+  Serial.println(statusCode);
+  Serial.println(response);
+  
 }
