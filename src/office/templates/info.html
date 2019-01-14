@@ -16,6 +16,8 @@
 
 
         <title>Мониторинг офиса №7</title>
+        {{ labels|json_script:"labels" }}
+        {{ temperature_air|json_script:"temp_air" }}
         {{ temperature_heater|json_script:"temp_heat" }}
 
     </head>
@@ -29,54 +31,79 @@
                 </div>
             </div>
         </div>
-        <script type="text/javascript" src="{% static 'mdb/js/mdb.min.js' %}"></script>
+        <script type="application/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
+        <!--<script type="text/javascript" src="{% static 'mdb/js/mdb.min.js' %}"></script>-->
             <script type="application/javascript">
               var ctxSc = document.getElementById('scatterChart').getContext('2d');
-              var scatterData = {
-                datasets: [{
-                  borderColor: 'rgba(99,0,125, .2)',
-                  backgroundColor: 'rgba(99,0,125, .5)',
-                  label: 'Температура воздуха',
-                  data: JSON.parse(document.getElementById('temp_heat').textContent)
-                }]
-              };
+              // var scatterData = {
+              //   datasets: [{
+              //     borderColor: 'rgba(99,0,125, .2)',
+              //     backgroundColor: 'rgba(99,0,125, .5)',
+              //     label: 'Температура воздуха',
+              //     data: JSON.parse(document.getElementById('temp_heat').textContent)
+              //   }]
+              // };
 
-              var config1 = new Chart.Scatter(ctxSc, {
-                data: scatterData,
-                options: {
-                  title: {
-                    display: true,
-                    text: 'Температура воздуха'
-                  },
-                  scales: {
-                    xAxes: [{
-                      type: 'linear',
-                      position: 'bottom',
-                      ticks: {
-                        userCallback: function (tick) {
-                          return tick;
+              var myLineChart = new Chart(ctxSc, {
+                    type: 'line',
+                    data: {
+                        labels: JSON.parse(document.getElementById('labels').textContent),
+                        datasets: [
+                            {
+                            data: JSON.parse(document.getElementById('temp_air').textContent),
+                            borderColor: 'rgb(255, 0, 0)',
+                            backgroundColor: 'rgba(0,0,0,0)',
+                            label: 'Воздух'
+
                         },
-                      },
-                      scaleLabel: {
-                        labelString: 'Часы с 00:00 1 января 2019',
-                        display: true,
-                      }
-                    }],
-                    yAxes: [{
-                      type: 'linear',
-                      // ticks: {
-                      //   userCallback: function (tick) {
-                      //     return tick.toString() + 'dB';
-                      //   }
-                      // },
-                      scaleLabel: {
-                        labelString: 'Градусы [C]',
-                        display: true
-                      }
-                    }]
-                  }
-                }
-              });
+                            {
+                            data: JSON.parse(document.getElementById('temp_heat').textContent),
+                            borderColor: 'rgb(0, 255, 0)',
+                            backgroundColor: 'rgba(0,0,0,0)',
+                            label: 'Батарея'
+
+                        }
+                        ]
+                    }
+                    // options: options
+                });
+              //
+              // var config1 = new Chart.Scatter(ctxSc, {
+              //   data: scatterData,
+              //   options: {
+              //     title: {
+              //       display: true,
+              //       text: 'Температура воздуха'
+              //     },
+              //     scales: {
+              //       xAxes: [{
+              //         type: 'linear',
+              //         position: 'bottom',
+              //         ticks: {
+              //           userCallback: function (tick) {
+              //             return tick;
+              //           },
+              //         },
+              //         scaleLabel: {
+              //           labelString: 'Часы с 00:00 1 января 2019',
+              //           display: true,
+              //         }
+              //       }],
+              //       yAxes: [{
+              //         type: 'linear',
+              //         // ticks: {
+              //         //   userCallback: function (tick) {
+              //         //     return tick.toString() + 'dB';
+              //         //   }
+              //         // },
+              //         scaleLabel: {
+              //           labelString: 'Градусы [C]',
+              //           display: true
+              //         }
+              //       }]
+              //     }
+              //   }
+              // });
 
             </script>
 

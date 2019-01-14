@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -51,18 +51,35 @@ def good_response(message, data=None):
 
 def index(request):
 
-    sd = SensorsData.objects.all()
+    sd_heat = SensorsData.objects.filter(sensor__name= 'ntc10k_temp', time__gte=datetime.now() - timedelta(days=7))
+    sd_air = SensorsData.objects.filter(sensor__name= 'dht11_temp', time__gte=datetime.now() - timedelta(days=7))
 
+    labels = []
     temp_heat = []
-    for line in sd:
+    temp_air = []
+    for line in sd_heat:
+        time_point = line.time.strftime("%Y-%m-%d %H:%M")
+        labels.append(time_point)
         temp_heat.append({
-            'x': int((line.time-datetime(2019,1,1,tzinfo=timezone.utc)).total_seconds()//3600),
+            'x': time_point,
             'y': float(line.value)
         })
+
+    for line in sd_air:
+        time_point = line.time.strftime("%Y-%m-%d %H:%M")
+        labels.append(time_point)
+        temp_air.append({
+            'x': time_point,
+            'y': float(line.value)
+        })
+
+    labels = list(set(labels))
+    labels.sort()
      
     template = 'info.html'
     context = {
-        # 'temperature_air': temp_air,
+        'labels': labels,
+        'temperature_air': temp_air,
         'temperature_heater': temp_heat
     }
     return render(request, template, context)
