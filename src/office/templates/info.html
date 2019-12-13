@@ -7,57 +7,82 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
         <!-- Font Awesome -->
-      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css">
-
-      <!-- Material Design Bootstrap -->
-      <link href="{% static 'mdb/css/mdb.min.css' %}" rel="stylesheet">
-      <!-- Your custom styles (optional) -->
-      <link href="{% static 'mdb/css/style.css' %}" rel="stylesheet">
-
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css">
+        <!-- Material Design Bootstrap -->
+        <link href="{% static 'mdb/css/mdb.min.css' %}" rel="stylesheet">
+        <!-- Your custom styles (optional) -->
+        <link href="{% static 'mdb/css/style.css' %}" rel="stylesheet">
 
         <title>Сенсоры</title>
-        {{ labels|json_script:"labels" }}
-        {{ temperature_air|json_script:"temp_air" }}
-        {{ temperature_heater|json_script:"temp_heat" }}
-
     </head>
     <body>
-        <div class="container-fluid">
+    <center>
+    Period:
+	<select id="period">
+		<center><option value="year">Year</option></center>
+		<center><option value="month">Month</option></center>
+		<center><option value="day">Day</option></center>
+		<center><option value="hour">Hour</option></center>
+	</select>
+	<button id="update">update</button>
+	</center>
+    <script>
+    	document.getElementById('update').addEventListener('click', function() {
+			var type = document.getElementById('type').value;
+			var dataset = chart.config.data.datasets[0];
 
+		});
+    </script>
+    {% for chart in charts %}
+        <div class="container-fluid">
             <div class="card">
-                <h2 class="card-header">Температура в офисе №7</h2>
                 <div class="card-body">
-                    <canvas id="scatterChart"></canvas>
+                    <canvas id="{{ chart.name }}"></canvas>
                 </div>
             </div>
         </div>
+        {% endfor %}
         <script type="application/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
-            <script type="application/javascript">
-              var ctxSc = document.getElementById('scatterChart').getContext('2d');
-              var myLineChart = new Chart(ctxSc, {
-                    type: 'line',
-                    data: {
-                        labels: JSON.parse(document.getElementById('labels').textContent),
-                        datasets: [
-                            {
-                            data: JSON.parse(document.getElementById('temp_air').textContent),
+        <script type="application/javascript">
+            {% for chart in charts %}
+            var ctxSc = document.getElementById('{{ chart.name }}').getContext('2d');
+          	ctxSc.canvas.width = 1000;
+    		ctxSc.canvas.height = 250;
+            var myLineChart = new Chart(ctxSc, {
+                type: 'line',
+                data: {
+                    labels: {{ chart.time|safe }},
+                    datasets: [
+                        {
+                            data: {{ chart.data|safe }},
+                            label: '{{ chart.name }}: {{ chart.location }}',
                             borderColor: 'rgb(0, 0, 128)',
+                            backgroundColor: 'rgb(0, 0, 128)',
                             fill: false,
-                            label: 'Воздух'
-
+                            pointRadius: 0,
+        					lineTension: 0,
+		        			borderWidth: 2,
                         },
-                            {
-                            data: JSON.parse(document.getElementById('temp_heat').textContent),
-                            borderColor: 'rgb(128, 0, 0)',
-                            fill: false,
-                            label: 'Батарея'
-
-                        }
-                        ]
+                    ]
+                },
+           		options: {
+                    animation: {
+                        duration: 0
+                    },
+                    scales: {
+                        yAxes: [{
+                            gridLines: {
+                                drawBorder: true
+                            },
+                            scaleLabel: {
+                                display: true,
+                                labelString: '{{ chart.units }}'
+                            }
+                        }]
                     }
-                    // options: options
-                });
-            </script>
-
+                }
+            });
+            {% endfor %}
+        </script>
     </body>
 </html>

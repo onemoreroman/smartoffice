@@ -5,3 +5,4 @@ djangorestframework==3.9.0
 pytz==2018.7
 rcssmin==1.0.6
 rjsmin==1.0.12
+pandas==0.24.2

@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+import pandas as pd
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -51,35 +51,18 @@ def good_response(message, data=None):
 
 
 def index(request):
-    sd_heat = SensorsData.objects.filter(sensor__name='ntc10k_temp', time__gte=datetime.now()-timedelta(days=7))
-    sd_air = SensorsData.objects.filter(sensor__name='dht11_temp', time__gte=datetime.now()-timedelta(days=7))
+    df = pd.read_csv('365days_120mins.csv')
+    df = df.replace({pd.np.nan: 'NaN'})
 
-    labels = []
-    temp_heat = []
-    temp_air = []
-    for line in sd_heat:
-        time_point = line.time.strftime("%d %a %H:%M")
-        labels.append(time_point)
-        temp_heat.append({
-            'x': time_point,
-            'y': float(line.value)
-        })
-
-    for line in sd_air:
-        time_point = line.time.strftime("%d %a %H:%M")
-        labels.append(time_point)
-        temp_air.append({
-            'x': time_point,
-            'y': float(line.value)
-        })
-
-    labels = list(set(labels))
-    labels.sort()
-     
     template = 'info.html'
-    context = {
-        'labels': labels,
-        'temperature_air': temp_air,
-        'temperature_heater': temp_heat
-    }
+    charts = []
+    for sensor in Sensors.objects.all():
+        charts.append({
+            'name': sensor.name,
+            'units': sensor.units,
+            'location': sensor.location,
+            'data': df[sensor.name].values.tolist(),
+            'time': df['local_time'].values.tolist()
+        })
+    context = {'charts': charts}
     return render(request, template, context)

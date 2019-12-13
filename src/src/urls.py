@@ -27,19 +27,3 @@ urlpatterns = [
     
 ]
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-
-# from django.conf.urls import url, include
-# from django.http import JsonResponse
-# from django.apps import apps
-#
-#
-# urlpatterns = [
-#     url(r'^v1/accounts/', include('accounts.urls')),
-#     url(r'^v1/documents/', include('documents.urls')),
-# ]
-# if apps.is_installed('trainset'):
-#     urlpatterns.append(url(r'^v1/trainset/', include('trainset.urls', namespace='v1')))
-#
-#
-# def handler404(request):
-#     return JsonResponse({'success': False, 'error': 404, 'message': 'Method not found'})
