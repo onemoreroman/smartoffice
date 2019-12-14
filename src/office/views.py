@@ -51,18 +51,28 @@ def good_response(message, data=None):
 
 
 def index(request):
-    df = pd.read_csv('365days_120mins.csv')
-    df = df.replace({pd.np.nan: 'NaN'})
-
     template = 'info.html'
     charts = []
+    periods = [
+        ('day', 1, 'hour'),
+        ('week', 7, 'day'),
+        ('month', 30, 'day'),
+        ('year', 365, 'month'),
+    ]
+    i = 0
     for sensor in Sensors.objects.all():
-        charts.append({
-            'name': sensor.name,
-            'units': sensor.units,
-            'location': sensor.location,
-            'data': df[sensor.name].values.tolist(),
-            'time': df['local_time'].values.tolist()
-        })
+        for (period, days, scale_unit) in periods:
+            ts = pd.read_csv('sensor'+str(sensor.id)+'_'+str(days)+'d.csv', header=None)
+            ts = ts.replace({pd.np.nan: 'NaN'})
+            charts.append({
+                'name': sensor.name,
+                'units': sensor.units,
+                'location': sensor.location,
+                'data': ts.rename(columns={0: 'x', 1: 'y'}).to_dict('records'),
+                'x_units': scale_unit,
+                'period': period,
+                'id': 'chart' + str(i)
+            })
+            i += 1
     context = {'charts': charts}
     return render(request, template, context)
