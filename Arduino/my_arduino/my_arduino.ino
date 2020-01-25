@@ -9,7 +9,7 @@
 DHT dht(DHTPIN, DHTTYPE);
 
 // Server
-char serverAddress[] = "ec2-3-121-222-156.eu-central-1.compute.amazonaws.com";  // server address
+char serverAddress[] = "lykova11.ru";  // server address
 int port = 80;
 String auth_user = "test_user_01";
 String auth_password = "test_user_01";
