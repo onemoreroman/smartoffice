@@ -109,3 +109,6 @@ venv.bak/
 # Data
 src/*.csv
 src/data/*
+
+# static
+src/static/*
