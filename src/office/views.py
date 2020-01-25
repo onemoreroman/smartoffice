@@ -57,7 +57,6 @@ def index(request):
         ('day', 1, 'hour'),
         ('week', 7, 'day'),
         ('month', 30, 'day'),
-        ('year', 365, 'month'),
     ]
     i = 0
     for sensor in Sensors.objects.all():
