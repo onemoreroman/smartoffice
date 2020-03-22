@@ -40,8 +40,6 @@ def good_response(message, data=None):
     response = Response({
         'data': {
             'success': True,
-            'message': message,
-            'data': {}
         }
     })
     if data:
