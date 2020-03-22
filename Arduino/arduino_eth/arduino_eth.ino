@@ -1,11 +1,11 @@
-#include <sSense-CCS811.h>
+#include <Adafruit_CCS811.h>
 #include <DHT.h>
 #include <SPI.h>
 #include <Ethernet.h>
 #include <ArduinoHttpClient.h>
 
 // Sensors
-CCS811 ssenseCCS811;
+Adafruit_CCS811 ccs;
 DHT dht(7, DHT11);
 
 // Ethernet
@@ -48,7 +48,7 @@ String prep_post_data(String sensor, float value) {
   return s;
 }
 
-String send_http_request(HttpClient http_client, String postdata) {
+void send_http_request(HttpClient http_client, String postdata) {
   http_client.beginRequest();
   http_client.post("/office/upload_data");
   http_client.sendHeader("Content-Type", "application/json");
@@ -57,22 +57,22 @@ String send_http_request(HttpClient http_client, String postdata) {
   http_client.beginBody();
   http_client.print(postdata);  
   http_client.endRequest();
-  return http_client.responseBody();
+  Serial.println(http_client.responseBody());
 }
 
 void setup() {
-  // open serial communications and wait for port to open:
+  // init serial
   Serial.begin(9600);
-  while (!Serial) {
-    ; // wait for serial port to connect. Needed for native USB port only
-  }
+  while(!Serial);
 
-  // initialize sensors
+  // init sensors
   dht.begin();
-  if(!ssenseCCS811.begin(uint8_t(I2C_CCS811_ADDRESS), uint8_t(CCS811_WAKE_PIN), driveMode_1sec))
-    Serial.println("Initialization CCS811 failed.");
+  if(!ccs.begin()){
+    Serial.println("Failed to start sensor! Please check your wiring.");
+    while(1);
+  }
  
-  // initialize ethernet
+  // init ethernet
   Ethernet.begin(mac);
   Serial.println(Ethernet.localIP());
   delay(1000);
@@ -80,38 +80,48 @@ void setup() {
 
 void loop() {
   float v;
-  String postdata, response;
+  String postdata;
 
   // Ask sensor 1
   v = dht.readHumidity();
   postdata = prep_post_data("dht11_humi", v);
-  Serial.println(postdata);
-  response = send_http_request(http_client, postdata);
-  Serial.println(response);
+  send_http_request(http_client, postdata);
+  delay(1000);
 
   // Ask sensor 2
   v = read_avg_vol(A0, 4);
-  v = volt_to_temp(v, 8000, 3500, 8);
-  postdata = prep_post_data("ntc10k_temp1", v);
-  response = send_http_request(http_client, postdata);
-  Serial.println(response);
+  v = volt_to_temp(v, 8450, 3500, 25);
+  postdata = prep_post_data("ntc10k_temp", v);
+  send_http_request(http_client, postdata);
+  delay(1000);
 
   // Ask sensor 3
-  v = read_avg_vol(A3, 4);
-  v = volt_to_temp(v, 10000, 3500, 27);
-  postdata = prep_post_data("ntc10k_temp", v);
-  response = send_http_request(http_client, postdata);
-  Serial.println(response);
+  v = read_avg_vol(A1, 4);
+  v = volt_to_temp(v, 8760, 3500, 25);
+  postdata = prep_post_data("ntc10k_temp1", v);
+  send_http_request(http_client, postdata);
+  delay(1000);
   
   // Ask sensor 4
-  v = ssenseCCS811.getCO2();
-  postdata = prep_post_data("ccs811_co2", v);
-  response = send_http_request(http_client, postdata);
-  Serial.println(response);
-  v = ssenseCCS811.gettVOC();
-  postdata = prep_post_data("ccs811_voc", v);
-  response = send_http_request(http_client, postdata);
-  Serial.println(response);
+  v = read_avg_vol(A3, 4);
+  v = volt_to_temp(v, 8530, 3500, 25);
+  postdata = prep_post_data("ntc10k_temp2", v);
+  send_http_request(http_client, postdata);
+  delay(1000);
   
-  delay(2000);
+  // Ask sensor 5
+  if(ccs.available()){
+    if(!ccs.readData()){
+      v = ccs.geteCO2();
+      postdata = prep_post_data("ccs811_eco2", v);
+      delay(1000);
+      send_http_request(http_client, postdata);
+      delay(1000);
+      v = ccs.getTVOC();
+      postdata = prep_post_data("ccs811_tvoc", v);
+      delay(1000);
+      send_http_request(http_client, postdata);
+    }
+  }  
+  delay(60000);
 }
