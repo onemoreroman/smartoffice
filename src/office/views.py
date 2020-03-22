@@ -20,7 +20,7 @@ def upload_data(request):
     sensor_data = SensorsData(sensor=sensor[0])
     sensor_data.value = sensor_value
     sensor_data.save()
-    return good_response('Data uploaded', {'sensor': sensor_name})
+    return good_response(data={'value': sensor_value})
 
 
 def bad_response(message, errors=None):
@@ -36,7 +36,7 @@ def bad_response(message, errors=None):
     return response
 
 
-def good_response(message, data=None):
+def good_response(data=None):
     response = Response({
         'data': {
             'success': True,
