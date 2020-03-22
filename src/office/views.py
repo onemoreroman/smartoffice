@@ -10,8 +10,8 @@ from office.models import Sensors, SensorsData
 
 @api_view(['POST'])
 def upload_data(request):
-    sensor_name = request.data.get('sensor_name', None)
-    sensor_value = request.data.get('sensor_value', None)
+    sensor_name = request.data.get('name', None)
+    sensor_value = request.data.get('value', None)
 
     sensor = Sensors.objects.filter(name=sensor_name)
     if sensor is None:
