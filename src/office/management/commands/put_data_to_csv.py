@@ -16,7 +16,10 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         sensors = Sensors.objects.all()
-        dt0 = datetime.now(tz=timezone.utc) - timedelta(days=options['delta_days'])
+        if options['delta_days'] == 0:
+            dt0 = datetime.now(tz=timezone.utc) - timedelta(hours=1)
+        else:
+            dt0 = datetime.now(tz=timezone.utc) - timedelta(days=options['delta_days'])
         for i, sensor in enumerate(sensors):
             csv_file = 'sensor' + str(sensor.id) + '_' + str(options['delta_days']) + 'd.csv'
             q = SensorsData.objects.filter(sensor=sensor, time__gte=dt0)

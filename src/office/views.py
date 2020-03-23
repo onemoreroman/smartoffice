@@ -48,10 +48,12 @@ def good_response(data=None):
     return response
 
 
-def days(request, days=1):
+def days(request, days=0):
     template = 'info.html'
     charts = []
-    if days == 1:
+    if days == 0:
+        scale_units = 'minute'
+    elif days == 1:
         scale_units = 'hour'
     elif 1 < days < 120:
         scale_units = 'day'
