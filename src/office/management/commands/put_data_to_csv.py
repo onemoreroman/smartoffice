@@ -18,11 +18,15 @@ class Command(BaseCommand):
         sensors = Sensors.objects.all()
         dt0 = datetime.now(tz=timezone.utc) - timedelta(days=options['delta_days'])
         for i, sensor in enumerate(sensors):
+            csv_file = 'sensor' + str(sensor.id) + '_' + str(options['delta_days']) + 'd.csv'
             q = SensorsData.objects.filter(sensor=sensor, time__gte=dt0)
+            if len(q) < 1:
+                open(csv_file, 'w').close()
+                continue
             time = [_.time for _ in q]
             vals = [float(_.value) for _ in q]
             ts = pd.Series(vals, index=pd.to_datetime(time))
             if options['sample_mins']:
                 ts = ts.resample(str(options['sample_mins'])+'T').mean()
             ts.index = ts.index.tz_convert('Asia/Krasnoyarsk').strftime('%y-%m-%d %H:%M:%S')
-            ts.to_csv('sensor'+str(sensor.id)+'_'+str(options['delta_days'])+'d.csv', header=False)
+            ts.to_csv(csv_file, header=False)
