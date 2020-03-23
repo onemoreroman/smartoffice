@@ -43,6 +43,7 @@
         <script type="application/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
         <script type="application/javascript">
             Chart.defaults.global.defaultFontSize = 15;
+            Chart.defaults.global.legend.display = false;
             {% for chart in charts %}
             var ct = document.getElementById('{{ chart.id }}').getContext('2d');
             ct.canvas.width = 1000;
@@ -51,7 +52,6 @@
                 type: 'line',
                 data: {
                     datasets: [{
-                        label: '{{ chart.name }}',
                         data: {{ chart.data|safe }},
                         borderColor: 'rgb(0, 128, 128)',
                         backgroundColor: 'rgb(0, 128, 128)',
@@ -62,6 +62,11 @@
                     }]
                 },
                 options: {
+                    title: {
+                        display: true,
+                        text: '{{ chart.name }}',
+                        fontSize: 25
+                    },
                     animation: {
                         duration: 0
                     },
