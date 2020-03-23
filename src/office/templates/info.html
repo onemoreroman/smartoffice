@@ -17,11 +17,20 @@
         <title>Сенсоры</title>
     </head>
     <body>
+        <div style="text-align: center;font-size: 25px;top: 20px;position: relative;">
+            <a href="/data/1">День</a>
+            &nbsp; &nbsp;
+            <a href="/data/7">Неделя</a>
+            &nbsp; &nbsp;
+            <a href="/data/30">Месяц</a>
+            &nbsp; &nbsp;
+            <a href="/data/90">3 месяца</a>
+        </div>
+        <br>
         {% for chart in charts %}
         <br>
         <div class="container-fluid">
             <div class="card">
-                <center>{{ chart.period }}</center>
                 <div class="card-body">
                     <canvas id="{{ chart.id }}"></canvas>
                 </div>
@@ -31,6 +40,7 @@
         {% endfor %}
         <script type="application/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
         <script type="application/javascript">
+            Chart.defaults.global.defaultFontSize = 15;
             {% for chart in charts %}
             var ct = document.getElementById('{{ chart.id }}').getContext('2d');
             ct.canvas.width = 1000;
@@ -41,12 +51,12 @@
                     datasets: [{
                         label: '{{ chart.name }}',
                         data: {{ chart.data|safe }},
-                        borderColor: 'rgb(0, 0, 128)',
-                        backgroundColor: 'rgb(0, 0, 128)',
+                        borderColor: 'rgb(0, 128, 128)',
+                        backgroundColor: 'rgb(0, 128, 128)',
                         fill: false,
                         pointRadius: 0,
                         lineTension: 0,
-                        borderWidth: 1,
+                        borderWidth: 0,
                     }]
                 },
                 options: {
@@ -62,7 +72,7 @@
                             },
                             scaleLabel: {
                                 display: true,
-                                labelString: 'Date'
+                                labelString: 'Дата/время'
                             }
                         }],
                         yAxes: [{

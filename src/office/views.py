@@ -48,32 +48,30 @@ def good_response(data=None):
     return response
 
 
-def index(request):
+def days(request, days=1):
     template = 'info.html'
     charts = []
-    periods = [
-        ('day', 1, 'hour'),
-        ('week', 7, 'day'),
-        ('month', 30, 'day'),
-    ]
+    if days == 1:
+        scale_units = 'hour'
+    elif 1 < days < 120:
+        scale_units = 'day'
+    else:
+        scale_units = 'month'
     i = 0
     for sensor in Sensors.objects.all():
-        for (period, days, scale_unit) in periods:
-            try:
-                ts = pd.read_csv('sensor'+str(sensor.id)+'_'+str(days)+'d.csv', header=None)
-                ts = ts.replace({pd.np.nan: 'NaN'})
-            except:
-                ts = pd.DataFrame([], columns=[0, 1])
+        try:
+            ts = pd.read_csv('sensor'+str(sensor.id)+'_'+str(days)+'d.csv', header=None)
+            ts = ts.replace({pd.np.nan: 'NaN'})
+        except:
+            ts = pd.DataFrame([], columns=[0, 1])
 
-            charts.append({
-                'name': sensor.name,
-                'units': sensor.units,
-                'location': sensor.location,
-                'data': ts.rename(columns={0: 'x', 1: 'y'}).to_dict('records'),
-                'x_units': scale_unit,
-                'period': period,
-                'id': 'chart' + str(i)
-            })
-            i += 1
+        charts.append({
+            'name': sensor.display_name,
+            'units': sensor.units,
+            'data': ts.rename(columns={0: 'x', 1: 'y'}).to_dict('records'),
+            'x_units': scale_units,
+            'id': 'chart' + str(i)
+        })
+        i += 1
     context = {'charts': charts}
     return render(request, template, context)

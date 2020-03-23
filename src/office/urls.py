@@ -7,7 +7,8 @@ from office import views
 
 urlpatterns = [
     url(r'upload_data$', views.upload_data, name='upload_data'),
-    path('', views.index, name='info'),
+    path('data/<int:days>', views.days),
+    path('', views.days),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
