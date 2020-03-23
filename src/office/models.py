@@ -6,6 +6,7 @@ class Sensors(models.Model):
     location = models.CharField(max_length=128, default='')
     type = models.IntegerField(default=0)
     units = models.CharField(default='', max_length=16, null=True, blank=True)
+    display_name = models.CharField(max_length=128, default='')
 
 
 class SensorsData(models.Model):
