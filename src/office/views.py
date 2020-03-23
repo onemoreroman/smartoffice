@@ -59,8 +59,12 @@ def index(request):
     i = 0
     for sensor in Sensors.objects.all():
         for (period, days, scale_unit) in periods:
-            ts = pd.read_csv('sensor'+str(sensor.id)+'_'+str(days)+'d.csv', header=None)
-            ts = ts.replace({pd.np.nan: 'NaN'})
+            try:
+                ts = pd.read_csv('sensor'+str(sensor.id)+'_'+str(days)+'d.csv', header=None)
+                ts = ts.replace({pd.np.nan: 'NaN'})
+            except:
+                ts = pd.DataFrame([], columns=[0, 1])
+
             charts.append({
                 'name': sensor.name,
                 'units': sensor.units,
