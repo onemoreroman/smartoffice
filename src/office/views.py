@@ -58,7 +58,7 @@ def days(request, days=1):
     else:
         scale_units = 'month'
     i = 0
-    for sensor in Sensors.objects.all():
+    for sensor in Sensors.objects.all().order_by('type'):
         try:
             ts = pd.read_csv('sensor'+str(sensor.id)+'_'+str(days)+'d.csv', header=None)
             ts = ts.replace({pd.np.nan: 'NaN'})
