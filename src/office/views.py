@@ -72,6 +72,8 @@ def days(request, days=0):
             'units': sensor.units,
             'data': ts.rename(columns={0: 'x', 1: 'y'}).to_dict('records'),
             'x_units': scale_units,
+            'y_max': max(sensor.display_max, ts[1].max()),
+            'y_min': min(sensor.display_min, ts[1].min()),
             'id': 'chart' + str(i)
         })
         i += 1

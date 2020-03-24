@@ -89,6 +89,10 @@
                             scaleLabel: {
                                 display: true,
                                 labelString: '{{ chart.units }}'
+                            },
+                            ticks: {
+                                min: {{ chart.y_min }},
+                                max: {{ chart.y_max }}
                             }
                         }]
                     }
