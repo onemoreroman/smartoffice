@@ -90,7 +90,7 @@ void loop() {
 
   // Ask sensor 2
   Serial.println("s2");
-  v = read_avg_vol(A0, 4);
+  v = read_avg_vol(A0, 5);
   v = volt_to_temp(v, 8450, 3500, 25);
   postdata = prep_post_data("ntc10k_temp2", v);
   Serial.println(postdata);
@@ -99,7 +99,7 @@ void loop() {
 
   // Ask sensor 3
   Serial.println("s3");
-  v = read_avg_vol(A1, 4);
+  v = read_avg_vol(A1, 5);
   v = volt_to_temp(v, 8760, 3500, 25);
   postdata = prep_post_data("ntc10k_temp", v);
   Serial.println(postdata);
@@ -108,7 +108,7 @@ void loop() {
   
   // Ask sensor 4
   Serial.println("s4");
-  v = read_avg_vol(A3, 4);
+  v = read_avg_vol(A3, 5);
   v = volt_to_temp(v, 8530, 3500, 25);
   postdata = prep_post_data("ntc10k_temp1", v);
   Serial.println(postdata);
@@ -119,16 +119,9 @@ void loop() {
   Serial.println("s5");
   if(ccs.available()){
     if(!ccs.readData()){
-      v = ccs.geteCO2();
-      postdata = prep_post_data("ccs811_eco2", v);
-      Serial.println(postdata);
-      delay(1000);
-      send_http_request(http_client, postdata);
-      delay(1000);
       v = ccs.getTVOC();
       postdata = prep_post_data("ccs811_tvoc", v);
       Serial.println(postdata);
-      delay(1000);
       send_http_request(http_client, postdata);
     }
   }  
