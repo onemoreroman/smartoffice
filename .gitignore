@@ -111,4 +111,4 @@ src/*.csv
 src/data/*
 
 # static
-src/static/*
+src/static/

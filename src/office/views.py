@@ -1,3 +1,5 @@
+from math import floor
+
 import pandas as pd
 
 from rest_framework.decorators import api_view
@@ -63,17 +65,20 @@ def days(request, days=0):
     for sensor in Sensors.objects.all().order_by('type'):
         try:
             ts = pd.read_csv('sensor'+str(sensor.id)+'_'+str(days)+'d.csv', header=None)
+            ts_min = ts[1].min()
+            ts_max = ts[1].max()
             ts = ts.replace({pd.np.nan: 'NaN'})
         except:
             ts = pd.DataFrame([], columns=[0, 1])
 
+        print(max(sensor.display_max, ts_max))
         charts.append({
             'name': sensor.display_name,
             'units': sensor.units,
             'data': ts.rename(columns={0: 'x', 1: 'y'}).to_dict('records'),
             'x_units': scale_units,
-            'y_max': max(sensor.display_max, ts[1].max()),
-            'y_min': min(sensor.display_min, ts[1].min()),
+            'y_max': floor(max(sensor.display_max, ts_max)),
+            'y_min': floor(min(sensor.display_min, ts_min)),
             'id': 'chart' + str(i)
         })
         i += 1

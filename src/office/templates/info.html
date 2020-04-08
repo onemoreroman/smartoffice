@@ -48,7 +48,7 @@
             {% for chart in charts %}
             var ct = document.getElementById('{{ chart.id }}').getContext('2d');
             ct.canvas.width = 1000;
-            ct.canvas.height = 200;
+            ct.canvas.height = 250;
             var myLineChart = new Chart(ct, {
                 type: 'line',
                 data: {
