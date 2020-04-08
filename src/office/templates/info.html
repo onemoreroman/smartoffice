@@ -19,15 +19,11 @@
     </head>
     <body>
         <div style="text-align: center;font-size: 25px;top: 20px;position: relative;">
-            <a href="/data/0">Час</a>
+            {% for period in periods %}
             &nbsp; &nbsp;
-            <a href="/data/1">День</a>
+            <a href="/data/{{ period.days }}">{{ period.name }}</a>
             &nbsp; &nbsp;
-            <a href="/data/7">Неделя</a>
-            &nbsp; &nbsp;
-            <a href="/data/30">Месяц</a>
-            &nbsp; &nbsp;
-            <a href="/data/90">3 месяца</a>
+            {% endfor %}
         </div>
         <br>
         {% for chart in charts %}

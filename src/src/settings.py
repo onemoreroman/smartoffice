@@ -127,3 +127,12 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+
+# Data
+PERIODS = [
+    {'name': 'Час', 'days': 0},
+    {'name': 'День', 'days': 1},
+    {'name': 'Неделя', 'days': 7},
+    {'name': 'Месяц', 'days': 30},
+]

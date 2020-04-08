@@ -5,6 +5,7 @@ import pandas as pd
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.shortcuts import render
+from django.conf import settings
 from rest_framework import status
 
 from office.models import Sensors, SensorsData
@@ -71,7 +72,6 @@ def days(request, days=0):
         except:
             ts = pd.DataFrame([], columns=[0, 1])
 
-        print(max(sensor.display_max, ts_max))
         charts.append({
             'name': sensor.display_name,
             'units': sensor.units,
@@ -82,5 +82,5 @@ def days(request, days=0):
             'id': 'chart' + str(i)
         })
         i += 1
-    context = {'charts': charts}
+    context = {'charts': charts, 'periods': settings.PERIODS}
     return render(request, template, context)
