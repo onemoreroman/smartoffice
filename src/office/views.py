@@ -71,6 +71,8 @@ def days(request, days=0):
             ts = ts.replace({pd.np.nan: 'NaN'})
         except:
             ts = pd.DataFrame([], columns=[0, 1])
+            ts_min = sensor.display_min
+            ts_max = sensor.display_max
 
         charts.append({
             'name': sensor.display_name,
