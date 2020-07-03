@@ -10,13 +10,20 @@
 5. copy db.sqlite3 to smartoffice/src
 6. sudo pip install uwsgi
 7. cp smartoffice/src/src_uwsgi_template.ini smartoffice/src/uwsgi.ini 
-8. vim /etc/rc.local and put new line: /usr/local/bin/uwsgi --ini /root/smartoffice/src/uwsgi.ini --daemonize /root/smartoffice/src/uwsgi.log
+8. crontab -e 
+   put new line: 
+   @reboot /usr/local/bin/uwsgi --ini /root/smartoffice/src/uwsgi.ini --daemonize /root/smartoffice/src/uwsgi.log --master-fifo /root/smartoffice/src/uwsgi.fifo
 9. cp smartoffice/src/src_uwsgi_template.ini smartoffice/src/uwsgi.ini 
 10. uwsgi --ini smartoffice/src/uwsgi.ini --daemonize smartoffice/src/uwsgi.log
 11. cd smartoffice && . venv/bin/activate
 12. pip install -r requirements/base.txt
 13. cp src/src_nginx_template.conf /etc/nginx/sites-available/mysite_nginx.conf
 14. vim /etc/nginx/sites-available/mysite_nginx.conf and put in your IP instead of 111.111.111.111
-15. sudo ln -s /etc/nginx/sites-available/mysite_nginx.conf /etc/nginx/sites-enabled/
-16. cd src && ./manage.py collectstatic
+15. sudo /etc/init.d/nginx start 
+16. sudo ln -s /etc/nginx/sites-available/mysite_nginx.conf /etc/nginx/sites-enabled/
+17. cd src && ./manage.py collectstatic
+18. ./manage.py put_data_to_csv 0
+19. ./manage.py put_data_to_csv 1
+20. ./manage.py put_data_to_csv 7
+21. ./manage.py put_data_to_csv 30
 
