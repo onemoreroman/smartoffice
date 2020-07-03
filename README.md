@@ -7,4 +7,4 @@
 2. Copy the contents of ~/.ssh/id_rsa.pub to a new Deploy key (via repository settings on github)
 3. sudo apt install git vim htop
 4. git clone git@github.com:onemoreroman/smartoffice.git
-5. 
+5. copy db.sqlite3 to smartoffice/src
