@@ -14,16 +14,18 @@
    put new line: 
    @reboot /usr/local/bin/uwsgi --ini /root/smartoffice/src/uwsgi.ini --daemonize /root/smartoffice/src/uwsgi.log --master-fifo /root/smartoffice/src/uwsgi.fifo
 9. cp smartoffice/src/src_uwsgi_template.ini smartoffice/src/uwsgi.ini 
-10. uwsgi --ini smartoffice/src/uwsgi.ini --daemonize smartoffice/src/uwsgi.log
-11. cd smartoffice && . venv/bin/activate
-12. pip install -r requirements/base.txt
-13. cp src/src_nginx_template.conf /etc/nginx/sites-available/mysite_nginx.conf
-14. vim /etc/nginx/sites-available/mysite_nginx.conf and put in your IP instead of 111.111.111.111
-15. sudo /etc/init.d/nginx start 
-16. sudo ln -s /etc/nginx/sites-available/mysite_nginx.conf /etc/nginx/sites-enabled/
-17. cd src && ./manage.py collectstatic
-18. ./manage.py put_data_to_csv 0
-19. ./manage.py put_data_to_csv 1
-20. ./manage.py put_data_to_csv 7
-21. ./manage.py put_data_to_csv 30
+10. vim /etc/nginx/nginx.conf and change user from www-data to root
+11. uwsgi --ini smartoffice/src/uwsgi.ini --daemonize smartoffice/src/uwsgi.log
+12. cd smartoffice && . venv/bin/activate
+13. pip install -r requirements/base.txt
+14. cp src/src_nginx_template.conf /etc/nginx/sites-available/mysite_nginx.conf
+15. vim /etc/nginx/sites-available/mysite_nginx.conf and put in your IP instead of 111.111.111.111
+16. sudo /etc/init.d/nginx start 
+17. sudo ln -s /etc/nginx/sites-available/mysite_nginx.conf /etc/nginx/sites-enabled/
+18. cd src && ./manage.py collectstatic
+19. ./manage.py put_data_to_csv 0
+20. ./manage.py put_data_to_csv 1
+21. ./manage.py put_data_to_csv 7
+22. ./manage.py put_data_to_csv 30
 
+* if anything goes wrong, try looking at NGINX log: /var/log/nginx/error.log
