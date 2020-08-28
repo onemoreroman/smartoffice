@@ -84,5 +84,8 @@ def days(request, days=0):
             'id': 'chart' + str(i)
         })
         i += 1
-    context = {'charts': charts, 'periods': settings.PERIODS}
+    context = {
+        'charts': charts,
+        'periods': [{'name': n, 'days': d} for n, d in zip(settings.PERIOD_NAMES, settings.PERIOD_NDAYS)]
+    }
     return render(request, template, context)

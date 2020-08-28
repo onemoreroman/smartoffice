@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+from decouple import config, Csv
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -130,9 +131,5 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 
 # Data
-PERIODS = [
-    {'name': 'Час', 'days': 0},
-    {'name': 'День', 'days': 1},
-    {'name': 'Неделя', 'days': 7},
-    {'name': 'Месяц', 'days': 30},
-]
+PERIOD_NAMES = config('PERIOD_NAMES', cast=Csv, default=['Час', 'День', 'Неделя', 'Месяц'])
+PERIOD_NDAYS = config('PERIOD_NDAYS', cast=Csv, default=[0, 1, 7, 30])
