@@ -131,5 +131,5 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 
 # Data
-PERIOD_NAMES = config('PERIOD_NAMES', cast=Csv(), default=['Час', 'День', 'Неделя', 'Месяц'])
-PERIOD_NDAYS = config('PERIOD_NDAYS', cast=Csv(), default=[0, 1, 7, 30])
+PERIOD_NAMES = config('PERIOD_NAMES', cast=Csv(), default='Час,День,Неделя,Месяц')
+PERIOD_NDAYS = config('PERIOD_NDAYS', cast=Csv(), default='0,1,7,30')
