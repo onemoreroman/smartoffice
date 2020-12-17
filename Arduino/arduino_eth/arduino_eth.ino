@@ -13,9 +13,9 @@ byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };  // MAC address
 EthernetClient eth_client;
 
 // Server
-String auth_user = "test_user_01";
-String auth_password = "test_user_01";
-HttpClient http_client = HttpClient(eth_client, "lykova11.ru", 80);
+String auth_user = "test_user";
+String auth_password = "test_pass";
+HttpClient http_client = HttpClient(eth_client, "test_url.com", 80);
 
 float read_avg_vol(int analog_pin, int N) {
   float v; int i;
