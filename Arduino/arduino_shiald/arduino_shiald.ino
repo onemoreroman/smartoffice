@@ -9,16 +9,16 @@ SoftwareSerial Serial1(6, 7); // RX, TX
 #endif
 
 // Wi-Fi
-char ssid[] = "ELTX-2.4GHz_WiFi"; // your network SSID (name)
-char pass[] = "GP2F050097"; // your network password
+char ssid[] = "test_ssid"; // your network SSID (name)
+char pass[] = "test_pass"; // your network password
 int status = WL_IDLE_STATUS;
 WiFiEspClient client;
 
 // Remote server
-char serverAddress[] = "lykova11.ru";
+char serverAddress[] = "test_url.com";
 int port = 80;
-String auth_user = "test_user_01";
-String auth_password = "test_user_01";
+String auth_user = "test_user";
+String auth_password = "test_pass";
 int statusCode = 0;
 int samples[3];
 String response;
