@@ -12,7 +12,7 @@
 7. cp smartoffice/src/src_uwsgi_template.ini smartoffice/src/uwsgi.ini 
 8. crontab -e 
    put new line: 
-   @reboot /usr/local/bin/uwsgi --ini /root/smartoffice/src/uwsgi.ini --daemonize /root/smartoffice/src/uwsgi.log --master-fifo /root/smartoffice/src/uwsgi.fifo
+   @reboot /usr/local/bin/uwsgi --ini /root/smartoffice/src/uwsgi.ini
 9. cp smartoffice/src/src_uwsgi_template.ini smartoffice/src/uwsgi.ini 
 10. vim /etc/nginx/nginx.conf and change user from www-data to root
 11. uwsgi --ini smartoffice/src/uwsgi.ini --daemonize smartoffice/src/uwsgi.log
