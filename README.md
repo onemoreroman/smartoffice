@@ -1,6 +1,8 @@
 # smartoffice
 1. Accepts requests with sensors data from Arduino and stores to DB (SQLite)
-2. Displays sensors data over the last 1/7/30/X days (check out lykova11.ru)
+2. Sensors employed: NTC10k for temperature, DHT11 for humidity and temperature, CCS811 for air quality (tVOC)  
+3. Displays sensors data over the last 1/7/30/X days (check out lykova11.ru)
+
 
 # tree
 ```
