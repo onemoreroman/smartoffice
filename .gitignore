@@ -112,3 +112,6 @@ src/data/*
 
 # static
 src/static/
+
+# arduino
+Arduino/arduino_eth/smartoffice_secrets.h
