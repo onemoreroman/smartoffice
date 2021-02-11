@@ -107,8 +107,13 @@ venv.bak/
 .mypy_cache/
 
 # Data
-src/*.csv
-src/data/*
+/src/*.csv
+/src/data/*
 
 # static
-src/static/
+/src/static/**
+
+# uwsgi
+/src/uwsgi.ini
+/src/uwsgi.log*
+/src/uwsgi-req.log*

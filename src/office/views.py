@@ -1,4 +1,5 @@
 from math import floor
+import json
 
 import pandas as pd
 
@@ -13,9 +14,14 @@ from office.models import Sensors, SensorsData
 
 @api_view(['POST'])
 def upload_data(request):
+    try:
+        json.loads(request.data)
+    except:
+        print(request.data)
+        return bad_response('Bad json {}'.format(str(request.data)))
+
     sensor_name = request.data.get('name', None)
     sensor_value = request.data.get('value', None)
-
     sensor = Sensors.objects.filter(name=sensor_name)
     if sensor is None:
         return bad_response('{} not in DB'.format(sensor_name))
