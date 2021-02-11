@@ -3,6 +3,7 @@
 #include <SPI.h>
 #include <Ethernet.h>
 #include <ArduinoHttpClient.h>
+#include "smartoffice_secrets.h"
 
 // Sensors
 Adafruit_CCS811 ccs;
@@ -13,9 +14,9 @@ byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };  // MAC address
 EthernetClient eth_client;
 
 // Server
-String auth_user = "test_user";
-String auth_password = "test_pass";
-HttpClient http_client = HttpClient(eth_client, "test_url.com", 80);
+String auth_user = SECRET_SMARTOFFICE_USER;
+String auth_password = SECRET_SMARTOFFICE_PASSWORD;
+HttpClient http_client = HttpClient(eth_client, SECRET_SMARTOFFICE_HOST, SECRET_SMARTOFFICE_PORT);
 
 float read_avg_vol(int analog_pin, int N) {
   float v; int i;
@@ -56,6 +57,7 @@ void send_http_request(HttpClient http_client, String postdata) {
   http_client.sendBasicAuth(auth_user, auth_password);
   http_client.beginBody();
   http_client.print(postdata);  
+  delay(300); // avoid "Broken pipe [core/writer.c line 306] during POST /office/upload_data"
   http_client.endRequest();
 }
 
@@ -81,47 +83,47 @@ void loop() {
   String postdata;
 
   // Ask sensor 1
-  Serial.println("s1");
+  // Serial.println("s1");
   v = dht.readHumidity();
   postdata = prep_post_data("dht11_humi", v);
-  Serial.println(postdata);
+  // Serial.println(postdata);
   send_http_request(http_client, postdata);
   delay(1000);
 
   // Ask sensor 2
-  Serial.println("s2");
+  // Serial.println("s2");
   v = read_avg_vol(A0, 5);
   v = volt_to_temp(v, 8450, 3500, 25);
   postdata = prep_post_data("ntc10k_temp2", v);
-  Serial.println(postdata);
+  // Serial.println(postdata);
   send_http_request(http_client, postdata);
   delay(1000);
 
   // Ask sensor 3
-  Serial.println("s3");
+  // Serial.println("s3");
   v = read_avg_vol(A1, 5);
   v = volt_to_temp(v, 8760, 3500, 25);
   postdata = prep_post_data("ntc10k_temp", v);
-  Serial.println(postdata);
+  // Serial.println(postdata);
   send_http_request(http_client, postdata);
   delay(1000);
   
   // Ask sensor 4
-  Serial.println("s4");
+  // Serial.println("s4");
   v = read_avg_vol(A3, 5);
   v = volt_to_temp(v, 8530, 3500, 25);
   postdata = prep_post_data("ntc10k_temp1", v);
-  Serial.println(postdata);
+  // Serial.println(postdata);
   send_http_request(http_client, postdata);
   delay(1000);
   
   // Ask sensor 5
-  Serial.println("s5");
+  // Serial.println("s5");
   if(ccs.available()){
     if(!ccs.readData()){
       v = ccs.getTVOC();
       postdata = prep_post_data("ccs811_tvoc", v);
-      Serial.println(postdata);
+      // Serial.println(postdata);
       send_http_request(http_client, postdata);
     }
   }  
