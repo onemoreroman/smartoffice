@@ -119,4 +119,4 @@ venv.bak/
 /src/uwsgi-req.log*
 
 # arduino
-Arduino/arduino_eth/smartoffice_secrets.h
+secrets.h

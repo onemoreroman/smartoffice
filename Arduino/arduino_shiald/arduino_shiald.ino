@@ -1,138 +1,84 @@
-#include <WiFiEsp.h>
-#include <sSense-CCS811.h>
+// To upload code to Arduino+Shiald:
+// 0. Make sure there is no code on Arduino without Shiald
+// 1. Set shiald switches all off
+// 2. Break the 0, 1 legs on shiald (cut them off)
+// 3. Bend the pins of two male-male wires and put them into Arduino 0, 1 
+// 4. Install shiald to Arduino making sure the wires stay in place
+// 5. Use the other ends of the wires to connect:
+//    Arduino RX (0) - Shiald TX (1)
+//    Arduino TX (1) - Shiald RX (0)
+//    i.e. we need to cross the wires
+// 6. Connect Arduino+Shiald to computer and upload code
+// To run uploaded code:
+// 1. Disconnect USB, set P1, P2 switches to ON and reroute the wires:
+//    Shiald 0 - Shiald 6
+//    Shiald 1 - Shiald 7
+// 2. Reconnect Arduino+Shiald to computer and open Serial port for debugging
+
+#include <OneWire.h>
 #include <WiFiEsp.h>
 #include "SoftwareSerial.h"
-
-// Emulate Serial1 on pins 6/7 if not present
-#ifndef HAVE_HWSERIAL1
-SoftwareSerial Serial1(6, 7); // RX, TX
-#endif
+#include "secrets.h"
+#include <DallasTemperature.h>
+#include <ArduinoHttpClient.h>
+#include <ArduinoJson.h>
 
 // Wi-Fi
-char ssid[] = "test_ssid"; // your network SSID (name)
-char pass[] = "test_pass"; // your network password
+IPAddress ip;
+bool x = ip.fromString(SECRET_WIFI_STATIC_IP);
+SoftwareSerial Serial1(6,7);
 int status = WL_IDLE_STATUS;
 WiFiEspClient client;
 
-// Remote server
-char serverAddress[] = "test_url.com";
-int port = 80;
-String auth_user = "test_user";
-String auth_password = "test_pass";
-int statusCode = 0;
-int samples[3];
-String response;
+// Sensor
+#define ONE_WIRE_BUS 8
+OneWire oneWire(ONE_WIRE_BUS); 
+DallasTemperature sensors(&oneWire);
 
-// Sensors
-CCS811 ssenseCCS811;
+// Server
+HttpClient http = HttpClient(client, SECRET_SERVER_HOST, SECRET_SERVER_PORT);
+
 
 void setup()
 {
-  // open serial communications and wait for port to open:
   Serial.begin(9600);
-  while (!Serial) {
-    ; // wait for serial port to connect. Needed for native USB port only
-  }
-  
-  delay(3000);
+  Serial1.begin(9600);
 
-  // initialize CCS811
-  if(!ssenseCCS811.begin(uint8_t(I2C_CCS811_ADDRESS), uint8_t(CCS811_WAKE_PIN), driveMode_1sec))
-    Serial.println("Initialization CCS811 failed.");
+  sensors.begin(); 
 
-  pinMode(LED_BUILTIN, OUTPUT); // initialize digital pin LED_BUILTIN as an output.
-  WiFi.init(&Serial1); // initialize ESP module
-
-  // check for the presence of the shield
+  WiFi.init(&Serial1);
+  WiFi.config(ip);
   if (WiFi.status() == WL_NO_SHIELD) {
     Serial.println("WiFi shield not present");
     while (true);
   }
-
-  // attempt to connect to WiFi network
   while (status != WL_CONNECTED) {
-    Serial.print("Attempting to connect to WPA SSID: ");
-    Serial.println(ssid);
-    // Connect to WPA/WPA2 network
-    status = WiFi.begin(ssid, pass);
+    status = WiFi.begin(SECRET_WIFI_SSID, SECRET_WIFI_PASSWORD);
   }
 
-  Serial.println("You're connected to the network");
-  printWifiStatus();
 }
 
-void printWifiStatus()
-{
-  // print the SSID of the network you're attached to
-  Serial.print("SSID: ");
-  Serial.println(WiFi.SSID());
-
-  // print your WiFi shield's IP address
-  IPAddress ip = WiFi.localIP();
-  Serial.print("IP Address: ");
-  Serial.println(ip);
-
-  // print where to go in the browser
-  Serial.println();
-  Serial.print("To see this page in action, open a browser to http://");
-  Serial.println(ip);
-  Serial.println();
-}
-
-float read_avg_vol(int analog_pin, int N) {
-  float v; int i;
-  v = analogRead(analog_pin);
-  for (i=2; i<=N; i++) {
-    v = (v*(i-1)+analogRead(analog_pin))/i;
-    delay(100);
-  }
-  return 5*(v/1023);
-}
-
-float vol2temp(float v, float R0, float B) {
-  float T, RtoR0;
-  RtoR0 = v/(5-v);
-  T = log(RtoR0)/B; // ln(R/Ro)/B
-  T += 1.0/(25+273.15); // + (1/To)
-  T = 1.0/T; // invert
-  T -= 273.15; // convert to C
-  return T;
-}
 
 void loop() {
-  float sensor1_t, sensor2_co2, sensor2_voc, v;
-  String postdata;
+  StaticJsonDocument<80> doc;
+  String json;
   
-  // Ask sensor ntc10k
-  v = read_avg_vol(A0, 4);
-  sensor1_t = vol2temp(v, 8960, 3500);
+  sensors.requestTemperatures();
+  doc["sensor_name"] = "leha_sensor";
+  doc["sensor_value"] = sensors.getTempCByIndex(0);
+  serializeJsonPretty(doc, json);
   
-  // Ask sensor CSS  
-  if (ssenseCCS811.checkDataAndUpdate())
-  {
-    sensor2_co2 = ssenseCCS811.getCO2();
-    sensor2_voc = ssenseCCS811.gettVOC();
-  }
-  else if (ssenseCCS811.checkForError())
-  {
-    ssenseCCS811.printError();
-  }
-
-  // Generate data
-  postdata = "{\"sensor_name\":\"ntc10k_1\","; 
-  postdata += "\"sensor_value\":";
-  postdata += sensor1_t;
-  postdata += "}";
+  http.beginRequest();
+  http.post("/office/upload_data");
+  http.sendHeader("Content-Type", "application/json");
+  http.sendHeader("Content-Length", json.length());
+  http.sendBasicAuth(SECRET_SERVER_USER, SECRET_SERVER_PASSWORD);
+  http.beginBody();
+  http.print(json);
+  http.print("\r\n");  
+  delay(200); 
+  http.endRequest();
+  http.stop();
   
-  // Send request
-  if (client.connect(serverAddress, 80)) {
-    Serial.println("Connected to server");
-    // Make a HTTP request
-    client.println("GET /asciilogo.txt HTTP/1.1");
-    client.println("Host: arduino.cc");
-    client.println("Connection: close");
-    client.println();
-  }
-  // wait
-  delay(2000);
+  delay(10000);
 }
