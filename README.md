@@ -7,8 +7,8 @@
 # tree
 ```
 ├── Arduino                            # Arduino scripts
-│   ├── arduino_eth                    # Arduino + Ethernet shield
-│   ├── arduino_shiald                 # Arduino + WiFi shield ESP8266 (aka shiald)
+│   ├── arduino_eth                    # Arduino + Ethernet shield + NTC10k + DHT11 + CCS811
+│   ├── arduino_shiald                 # Arduino + WiFi shield ESP8266 (aka shiald) + DS18B20
 │   └── libraries
 ├── README.md
 ├── requirements                       # pip requirements 
