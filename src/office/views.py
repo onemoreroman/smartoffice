@@ -15,16 +15,16 @@ from office.models import Sensors, SensorsData
 @api_view(['POST'])
 def upload_data(request):
     try:
-        json.loads(request.data)
+        sensor_name = request.data.get('sensor_name', None)
+        sensor_value = request.data.get('sensor_value', None)
+        assert(len(sensor_name)>0)
+        assert(sensor_value>-99999999)
     except:
-        print(request.data)
         return bad_response('Bad json {}'.format(str(request.data)))
 
-    sensor_name = request.data.get('name', None)
-    sensor_value = request.data.get('value', None)
     sensor = Sensors.objects.filter(name=sensor_name)
-    if sensor is None:
-        return bad_response('{} not in DB'.format(sensor_name))
+    if not sensor:
+        return bad_response('Sensor {} not in DB'.format(sensor_name))
 
     sensor_data = SensorsData(sensor=sensor[0])
     sensor_data.value = sensor_value
@@ -33,6 +33,7 @@ def upload_data(request):
 
 
 def bad_response(message, errors=None):
+    print(message)
     response = Response({
         'data': {
             'success': False,
