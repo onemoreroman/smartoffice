@@ -9,6 +9,7 @@ class Sensors(models.Model):
     display_name = models.CharField(max_length=128, default='')
     display_min = models.FloatField(default=0.0)
     display_max = models.FloatField(default=100.0)
+    active = models.BooleanField(default=True)
 
 
 class SensorsData(models.Model):

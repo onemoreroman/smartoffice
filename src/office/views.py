@@ -1,7 +1,7 @@
 from math import floor
-import json
 
 import pandas as pd
+import numpy as np
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -17,8 +17,8 @@ def upload_data(request):
     try:
         sensor_name = request.data.get('sensor_name', None)
         sensor_value = request.data.get('sensor_value', None)
-        assert(len(sensor_name)>0)
-        assert(sensor_value>-99999999)
+        assert(len(sensor_name) > 0)
+        assert(sensor_value > -99999999)
     except:
         return bad_response('Bad json {}'.format(str(request.data)))
 
@@ -70,12 +70,12 @@ def days(request, days=0):
     else:
         scale_units = 'month'
     i = 0
-    for sensor in Sensors.objects.all().order_by('type'):
+    for sensor in Sensors.objects.filter(active=True).order_by('type'):
         try:
             ts = pd.read_csv('sensor'+str(sensor.id)+'_'+str(days)+'d.csv', header=None)
             ts_min = ts[1].min()
             ts_max = ts[1].max()
-            ts = ts.replace({pd.np.nan: 'NaN'})
+            ts = ts.replace({np.nan: 'NaN'})
         except:
             ts = pd.DataFrame([], columns=[0, 1])
             ts_min = sensor.display_min

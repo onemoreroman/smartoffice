@@ -15,7 +15,7 @@ class Command(BaseCommand):
         parser.add_argument('--sample_mins', default=0, type=int)
 
     def handle(self, *args, **options):
-        sensors = Sensors.objects.all()
+        sensors = Sensors.objects.filter(active=True)
         if options['delta_days'] == 0:
             dt0 = datetime.now(tz=timezone.utc) - timedelta(hours=1)
         else:
