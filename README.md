@@ -18,7 +18,7 @@
 │   ├── src_uwsgi_template.ini         # UWSGI config template 
 ```
 
-# install Django app on Ubuntu
+# install on Ubuntu
 ```
 1. sudo apt install git vim htop gcc build-essential python3-dev python3-pip nginx
 2. git clone git@github.com:onemoreroman/smartoffice.git
