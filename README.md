@@ -1,8 +1,7 @@
 # smartoffice
-1. Accepts requests with sensors data from Arduino and stores to DB (SQLite)
-2. Sensors employed: NTC10k, DS18B20 for temperature, DHT11 for humidity and temperature, CCS811 for air quality (tVOC)  
-3. Displays sensors data over the last 1/7/30/X days
-
+1. Accepts requests with sensors data and stores to DB (SQLite)
+2. Converts data from DB to CSV and displays using Chart.js over the last 1/7/30/X days
+3. Sensors in Arduino scripts: NTC10k, DS18B20 for temperature, DHT11 for humidity and temperature, CCS811 for air quality (tVOC)  
 
 # tree
 ```
@@ -14,7 +13,7 @@
 ├── requirements                       # pip requirements 
 │   └── base.txt
 ├── src                                # Django project
-│   ├── office                         # main Django app 
+│   ├── sensor                         # main Django app 
 │   ├── src_nginx_template.conf        # NGINX config template
 │   ├── src_uwsgi_template.ini         # UWSGI config template 
 ```
