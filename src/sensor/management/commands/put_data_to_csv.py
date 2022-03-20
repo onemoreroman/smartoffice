@@ -1,10 +1,11 @@
+import os
 from datetime import datetime, timedelta, timezone
 
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 
 import pandas as pd
 
-from office.models import SensorsData, Sensors
+from sensor.models import SensorData, Sensor
 
 
 class Command(BaseCommand):
@@ -15,14 +16,15 @@ class Command(BaseCommand):
         parser.add_argument('--sample_mins', default=0, type=int)
 
     def handle(self, *args, **options):
-        sensors = Sensors.objects.filter(active=True)
+        sensors = Sensor.objects.filter(active=True)
         if options['delta_days'] == 0:
             dt0 = datetime.now(tz=timezone.utc) - timedelta(hours=1)
         else:
             dt0 = datetime.now(tz=timezone.utc) - timedelta(days=options['delta_days'])
         for i, sensor in enumerate(sensors):
-            csv_file = 'sensor' + str(sensor.id) + '_' + str(options['delta_days']) + 'd.csv'
-            q = SensorsData.objects.filter(sensor=sensor, time__gte=dt0)
+            os.makedirs('sensor/csv', exist_ok=True)
+            csv_file = 'sensor/csv/sensor' + str(sensor.id) + '_' + str(options['delta_days']) + 'd.csv'
+            q = SensorData.objects.filter(sensor=sensor, time__gte=dt0)
             if len(q) < 1:
                 open(csv_file, 'w').close()
                 continue
@@ -31,5 +33,5 @@ class Command(BaseCommand):
             ts = pd.Series(vals, index=pd.to_datetime(time))
             if options['sample_mins']:
                 ts = ts.resample(str(options['sample_mins'])+'T').mean()
-            ts.index = ts.index.tz_convert('Asia/Krasnoyarsk').strftime('%y-%m-%d %H:%M:%S')
+            ts.index = ts.index.tz_convert('Europe/Moscow').strftime('%y-%m-%d %H:%M:%S')
             ts.to_csv(csv_file, header=False)

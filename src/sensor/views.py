@@ -9,7 +9,7 @@ from django.shortcuts import render
 from django.conf import settings
 from rest_framework import status
 
-from office.models import Sensors, SensorsData
+from sensor.models import Sensor, SensorData
 
 
 @api_view(['POST'])
@@ -22,11 +22,11 @@ def upload_data(request):
     except:
         return bad_response('Bad json {}'.format(str(request.data)))
 
-    sensor = Sensors.objects.filter(name=sensor_name)
+    sensor = Sensor.objects.filter(name=sensor_name)
     if not sensor:
-        return bad_response('Sensor {} not in DB'.format(sensor_name))
+        return bad_response('Sensor {} not in DB, {}'.format(sensor_name, sensor))
 
-    sensor_data = SensorsData(sensor=sensor[0])
+    sensor_data = SensorData(sensor=sensor[0])
     sensor_data.value = sensor_value
     sensor_data.save()
     return good_response(data={'value': sensor_value})
@@ -59,7 +59,7 @@ def good_response(data=None):
 
 
 def days(request, days=0):
-    template = 'info.html'
+    template = 'display.html'
     charts = []
     if days == 0:
         scale_units = 'minute'
@@ -70,9 +70,9 @@ def days(request, days=0):
     else:
         scale_units = 'month'
     i = 0
-    for sensor in Sensors.objects.filter(active=True).order_by('type'):
+    for sensor in Sensor.objects.filter(active=True).order_by('type'):
         try:
-            ts = pd.read_csv('sensor'+str(sensor.id)+'_'+str(days)+'d.csv', header=None)
+            ts = pd.read_csv('sensor/csv/sensor'+str(sensor.id)+'_'+str(days)+'d.csv', header=None)
             ts_min = ts[1].min()
             ts_max = ts[1].max()
             ts = ts.replace({np.nan: 'NaN'})

@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class Sensors(models.Model):
+class Sensor(models.Model):
     name = models.CharField(max_length=128)
     location = models.CharField(max_length=128, default='')
     type = models.IntegerField(default=0)
@@ -12,7 +12,7 @@ class Sensors(models.Model):
     active = models.BooleanField(default=True)
 
 
-class SensorsData(models.Model):
-    sensor = models.ForeignKey('office.Sensors', on_delete=models.CASCADE)
+class SensorData(models.Model):
+    sensor = models.ForeignKey('sensor.Sensor', on_delete=models.CASCADE)
     value = models.CharField(default='', max_length=16, null=True, blank=True)
-    time = models.DateTimeField(auto_now_add=True)
+    time = models.DateTimeField(blank=False)
