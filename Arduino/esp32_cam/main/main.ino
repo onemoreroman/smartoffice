@@ -15,6 +15,7 @@ unsigned long pressedTime  = 0;
 unsigned long releasedTime = 0;
 ezButton button(BUTTON_PIN);
 WiFiManager wm;
+wm.setConfigPortalTimeout(TIMEOUT_WIFI_SETUP/1000);
 
 void setup() {
   Serial.begin(115200);
@@ -37,21 +38,18 @@ void loop() {
     long pressDuration = releasedTime - pressedTime;
 
     if (pressDuration > LONG_PRESS_TIME) {
-      wm.resetSettings();  // remove for PROD!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       Serial.println("A long press is detected");
+      //wm.resetSettings();  // remove for PROD!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       buttonPressedMillis = millis();
       currentMillis = 0;
       previousMillis = 0;
-      while (currentMillis <= TIMEOUT_WIFI_SETUP) {
-        bool res;
-        res = wm.autoConnect("AutoConnectAP");
-        if(!res) {
-          Serial.println("Failed to connect");
-          // ESP.restart();
-        } 
-        else {
-          //if you get here you have connected to the WiFi    
-          Serial.println("connected...yeey :)");
+      if (currentMillis <= TIMEOUT_WIFI_SETUP) {
+        if (!wm.startConfigPortal("OnDemandAP")) {
+          Serial.println("failed to connect and hit timeout");
+          delay(3000);
+          //reset and try again, or maybe put it to deep sleep
+          ESP.restart();
+          delay(5000);
         }
         currentMillis = millis() - buttonPressedMillis;
         if (currentMillis - previousMillis >= BLINK_INTERVAL) {
