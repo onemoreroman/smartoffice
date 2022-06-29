@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib import admin
 
 
 class Sensor(models.Model):
@@ -16,3 +17,8 @@ class SensorData(models.Model):
     sensor = models.ForeignKey('sensor.Sensor', on_delete=models.CASCADE)
     value = models.CharField(default='', max_length=16, null=True, blank=True)
     time = models.DateTimeField(blank=False)
+
+
+class SensorAdmin(admin.ModelAdmin):
+    list_display = ('name', 'location', 'units', 'active')
+
