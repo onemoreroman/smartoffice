@@ -1,6 +1,6 @@
 Django==2.2.13
 django-compressor==2.4
-djangorestframework==3.11.0
+djangorestframework==3.11.2
 pandas==1.0.5
 python-decouple==3.3
 pms7003==1.1.0
